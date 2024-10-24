@@ -4,7 +4,6 @@ const scoreDisplay = document.getElementById("score");
 const startBtn = document.getElementById("startBtn");
 const exitBtn = document.getElementById("exitBtn");
 const finalScoreDisplay = document.getElementById("finalScore");
-const gameOverSound = document.getElementById("gameOverSound");
 
 const boardSize = 400;
 const blockSize = 20;
@@ -23,7 +22,6 @@ document.addEventListener("keydown", handleKeyPress);
 
 // Start or restart the game
 function startGame() {
-    stopMusic();
     resetGame();
     placeFood();
     gameInterval = setInterval(updateGame, speed);
@@ -44,7 +42,6 @@ function resetGame() {
 // Handle key presses (spacebar for pause)
 function handleKeyPress(event) {
     const key = event.key;
-
     if (key === " ") {
         togglePause();
     } else {
@@ -100,8 +97,10 @@ function checkCollision() {
 
 // Place food at a random position
 function placeFood() {
-    food.x = Math.floor(Math.random() * (boardSize / blockSize)) * blockSize;
-    food.y = Math.floor(Math.random() * (boardSize / blockSize)) * blockSize;
+    do {
+        food.x = Math.floor(Math.random() * (boardSize / blockSize)) * blockSize;
+        food.y = Math.floor(Math.random() * (boardSize / blockSize)) * blockSize;
+    } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
 }
 
 // Eat food and increase score
@@ -129,17 +128,10 @@ function changeDirection(event) {
     else if (key === "ArrowRight" && direction.x !== -1) direction = { x: 1, y: 0 };
 }
 
-// End game and play music
+// End game
 function endGame() {
     clearInterval(gameInterval);
-    gameOverSound.play();
     finalScoreDisplay.textContent = `Game Over! Final Score: ${score}`;
-}
-
-// Stop music when restarting
-function stopMusic() {
-    gameOverSound.pause();
-    gameOverSound.currentTime = 0;
 }
 
 // Draw the game board
